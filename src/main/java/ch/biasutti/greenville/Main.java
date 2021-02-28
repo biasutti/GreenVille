@@ -1,6 +1,7 @@
 package ch.biasutti.greenville;
 
 import ch.biasutti.greenville.listener.PlayerDeathListener;
+import ch.biasutti.greenville.listener.PlayerInteractListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,7 @@ public final class Main extends JavaPlugin {
         System.out.println("Start GreenVille Plugin!");
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(new PlayerDeathListener(),this);
+        manager.registerEvents(new PlayerInteractListener(),this);
     }
 
     @Override
