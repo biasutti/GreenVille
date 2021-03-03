@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class PlayerDeathListener implements Listener {
 
     @EventHandler
@@ -22,25 +24,27 @@ public class PlayerDeathListener implements Listener {
 
             int singleChestSize = 27;
             Chest deathChest;
-            Location chestLocation;
+            List<Location> locations;
 
             if (e.getDrops().size() <= singleChestSize) {
-                chestLocation = this.setSingleChestOnDeath(deathLocation);
+                locations = this.setSingleChest(deathLocation);
             } else {
-                chestLocation = this.setDoubleChestOnDeath(deathLocation);
+                locations = this.setDoubleChest(deathLocation);
             }
 
-            deathChest = (Chest)chestLocation.getBlock().getState();
-            deathChest.setCustomName(p.getName() + "'s death chest!");
-            deathChest.update();
+            locations.forEach((location) -> {
+                setCustomName((Chest) location.getBlock().getState(), p.getName() + "'s death chest!");
+            });
 
-            for (final ItemStack item: e.getDrops()) {
+            deathChest = (Chest) locations.get(0).getBlock().getState();
+
+            for (final ItemStack item : e.getDrops()) {
                 deathChest.getInventory().addItem(item);
             }
 
             e.getDrops().clear();
             System.out.println("[GreenVille] Create deathchest for " + p.getName());
-            p.sendMessage("Your chest is at X: " + chestLocation.getBlockX() + " Y: " + chestLocation.getBlockY() + " Z: " + chestLocation.getBlockZ());
+            p.sendMessage("Your chest is at X: " + deathChest.getLocation().getBlockX() + " Y: " + deathChest.getLocation().getBlockY() + " Z: " + deathChest.getLocation().getBlockZ());
 
         } else {
             System.out.println("Error player not found!");
@@ -48,41 +52,49 @@ public class PlayerDeathListener implements Listener {
 
     }
 
-    private Location setSingleChestOnDeath(Location deathLocation) {
-        Block block1 = deathLocation.getBlock();
-        if (block1.getType().isAir()) {
-            deathLocation.getBlock().setType(Material.CHEST);
-            return deathLocation;
-        } else {
-            Location chestLocation = deathLocation.clone();
-            chestLocation.setY(deathLocation.getBlockY() + 1);
-            return setSingleChestOnDeath(chestLocation);
-        }
+    private List<Location> setSingleChest(Location deathLocation) {
+        Location chestLocation = getNextFreeYBlock(deathLocation);
+        return List.of(createChest(chestLocation, null));
     }
 
-    private Location setDoubleChestOnDeath(Location deathLocation) {
-        Location leftChestLocation = setSingleChestOnDeath(deathLocation);
+    private List<Location> setDoubleChest(Location deathLocation) {
+        Location leftChestLocation = getNextFreeYBlock(deathLocation);
         Location rightChestLocation = leftChestLocation.clone();
         rightChestLocation.setX(rightChestLocation.getX() + 1);
 
-        Block leftBlock = leftChestLocation.getBlock();
-        Block rightBlock = rightChestLocation.getBlock();
+        Location calcLeftChestLocation = createChest(leftChestLocation, Type.LEFT);
+        Location calcRightChestLocation = createChest(rightChestLocation, Type.RIGHT);
 
-        leftBlock.setType(Material.CHEST);
-        rightBlock.setType(Material.CHEST);
+        return List.of(calcLeftChestLocation, calcRightChestLocation);
+    }
 
-        Chest leftChest = (Chest) leftBlock.getState();
-        Chest rightChest = (Chest) rightBlock.getState();
+    private Location createChest(Location location, Type type) {
+        Location chestLocation = location.clone();
+        Block block = chestLocation.getBlock();
+        block.setType(Material.CHEST);
+        if (type != null) {
+            Chest chest = (Chest) block.getState();
+            org.bukkit.block.data.type.Chest chestData = (org.bukkit.block.data.type.Chest) chest.getBlockData();
+            chestData.setType(type);
+            block.setBlockData(chestData, true);
+        }
+        return chestLocation;
+    }
 
-        org.bukkit.block.data.type.Chest leftChestData = (org.bukkit.block.data.type.Chest)leftChest.getBlockData();
-        org.bukkit.block.data.type.Chest rightChestData = (org.bukkit.block.data.type.Chest)rightChest.getBlockData();
+    private Location getNextFreeYBlock(Location location) {
+        Block block = location.getBlock();
+        if (block.getType().isAir()) {
+            return location;
+        } else {
+            Location chestLocation = location.clone();
+            chestLocation.setY(location.getBlockY() + 1);
+            return getNextFreeYBlock(chestLocation);
+        }
+    }
 
-        leftChestData.setType(Type.LEFT);
-        leftBlock.setBlockData(leftChestData, true);
-        rightChestData.setType(Type.RIGHT);
-        rightBlock.setBlockData(rightChestData, true);
-
-        return leftChestLocation;
+    private void setCustomName(Chest chest, String name) {
+        chest.setCustomName(name);
+        chest.update();
     }
 
 }
