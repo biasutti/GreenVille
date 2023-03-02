@@ -17,8 +17,8 @@ pipeline {
     PROFILE = ' '
   }
 
-  parameters {
-  }
+  /*parameters {
+  }*/
 
   stages {
     stage("workspace") {
