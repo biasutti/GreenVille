@@ -12,8 +12,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PlayerDeathListener implements Listener {
+
+    private final Logger log = Logger.getLogger("GreenVille");
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
@@ -43,11 +46,11 @@ public class PlayerDeathListener implements Listener {
             }
 
             e.getDrops().clear();
-            System.out.println("[GreenVille] Create deathchest for " + p.getName());
+            log.info("[GreenVille] Create deathchest for " + p.getName());
             p.sendMessage("Your chest is at X: " + deathChest.getLocation().getBlockX() + " Y: " + deathChest.getLocation().getBlockY() + " Z: " + deathChest.getLocation().getBlockZ());
 
         } else {
-            System.out.println("Error player not found!");
+            log.warning("Error player not found!");
         }
 
     }

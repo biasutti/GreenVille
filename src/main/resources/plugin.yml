@@ -1,4 +1,4 @@
 name: GreenVille
 version: ${project.version}
 main: ch.biasutti.greenville.Main
-api-version: 1.16
+api-version: 1.19
