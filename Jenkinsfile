@@ -17,7 +17,7 @@ pipeline {
   }*/
 
   stages {
-    stage("workspace") {
+    stage("Prepare") {
       steps {
         echo "BRANCH_NAME = ${env.BRANCH_NAME}"
         echo "GIT_BRANCH  = ${env.GIT_BRANCH}"
@@ -37,7 +37,7 @@ pipeline {
 
     stage("Archive") {
       steps {
-        archiveArtifacts artifacts: '**/*.jar', allowEmptyArchive: true
+        archiveArtifacts artifacts: '**/greenVille-*.jar', allowEmptyArchive: true
       }
     }
 
