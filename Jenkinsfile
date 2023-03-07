@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 pipeline {
   agent {
-    label 'local-node'
+    label 'local-node-jdk17'
   }
 
   options {
@@ -34,6 +34,13 @@ pipeline {
         }
       }
     }
+
+    stage("Archive") {
+      steps {
+        archiveArtifacts artifacts: '**/*executable.jar', allowEmptyArchive: true
+      }
+    }
+
   }
 
   post {
