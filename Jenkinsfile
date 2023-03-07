@@ -37,7 +37,7 @@ pipeline {
 
     stage("Archive") {
       steps {
-        archiveArtifacts artifacts: '**/*executable.jar', allowEmptyArchive: true
+        archiveArtifacts artifacts: '**/*.jar', allowEmptyArchive: true
       }
     }
 
