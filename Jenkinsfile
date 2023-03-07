@@ -1,13 +1,9 @@
 #!/usr/bin/env groovy
 pipeline {
   agent {
-    dockerfile {
-      dir 'docker'
-      label 'local-node'
-      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg USER_GID=$(id -g)'
-      args '-h maven-build'
-    }
+    label 'local-node'
   }
+
   options {
     timeout(time: 1, unit: 'HOURS')
   }
