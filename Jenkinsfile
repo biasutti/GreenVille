@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 pipeline {
   agent {
-    label 'local-node-jdk17'
+    label 'local-node'
   }
 
   options {
